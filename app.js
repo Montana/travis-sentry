@@ -19,6 +19,10 @@ const port = process.env.PORT || 3000;
 app.use(Sentry.Handlers.requestHandler());
 app.use(Sentry.Handlers.tracingHandler());
 
+app.get('/healthz', (req, res) => {
+  res.status(200).send('OK');
+});
+
 app.get('/', (req, res) => {
   res.send('Hello from Node + Sentry!');
 });
