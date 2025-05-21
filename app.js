@@ -1,54 +1,33 @@
 const express = require('express');
 const Sentry = require('@sentry/node');
+const Tracing = require('@sentry/tracing');
 
 Sentry.init({
   dsn: process.env.SENTRY_DSN,
-  tracesSampleRate: 1.0,
-});
-
-const Sentry = require('@sentry/node'); @ 
-
-['log', 'info', 'warn', 'error'].forEach((level) => {
-  const original = console[level];
-  console[level] = (...args) => {
-    Sentry.addBreadcrumb({
-      category: 'console',
-      message: args.join(' '),
-      level: level === 'log' ? 'info' : level,
-    });
-    original.apply(console, args);
-  };
+  tracesSampleRate: 1.0, 
+  integrations: [
+    new Sentry.Integrations.Http({ tracing: true }),
+    new Tracing.Integrations.Express({ app: express() }),
+  ],
 });
 
 const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(Sentry.Handlers.requestHandler());
+app.use(Sentry.Handlers.tracingHandler());
 
 app.get('/', (req, res) => {
-  Sentry.addBreadcrumb({
-    category: 'route',
-    message: 'User accessed home page',
-    level: 'info',
-  });
-  res.send('Hello from Node + Sentry!');
+  res.send('Hello from Node + Sentry with Tracing!');
 });
 
 app.get('/error', (req, res) => {
   Sentry.addBreadcrumb({
     category: 'custom',
-    message: 'About to throw a test error',
-    level: 'warning',
+    message: 'Throwing error on /error route',
+    level: 'error',
   });
-
-  Sentry.addBreadcrumb({
-    category: 'user',
-    message: 'Simulated user ID: 1234',
-    data: { user_id: 1234, action: 'trigger_error' },
-    level: 'info',
-  });
-
-  throw new Error('Test error for Sentry with breadcrumbs');
+  throw new Error('Simulated error for Sentry tracing');
 });
 
 app.use(Sentry.Handlers.errorHandler());
