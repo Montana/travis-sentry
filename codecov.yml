@@ -1,0 +1,56 @@
+codecov:
+  require_ci_to_pass: yes
+  token: ${CODECOV_TOKEN} 
+
+coverage:
+  precision: 2
+  round: down
+  range: "70...100"
+
+  status:
+    project:
+      default:
+        target: 85%
+        threshold: 2%
+        base: auto
+
+    patch:
+      default:
+        target: 75%
+        threshold: 1%
+
+    changes:
+      default:
+        enabled: yes
+
+flags:
+  package-a:
+    paths:
+      - packages/package-a/
+    carryforward: true
+
+  package-b:
+    paths:
+      - packages/package-b/
+    carryforward: true
+
+  shared:
+    paths:
+      - packages/shared/
+    carryforward: true
+
+ignore:
+  - "test/"
+  - "**/*.test.js"
+  - "**/__mocks__/**"
+  - "node_modules/"
+  - "coverage/"
+
+comment:
+  layout: "reach, diff, flags, files"
+  behavior: default
+  require_changes: true
+
+parsers:
+  javascript:
+    enable_partials: yes
