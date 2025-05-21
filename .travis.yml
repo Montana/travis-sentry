@@ -8,6 +8,7 @@ git:
 
 install:
   - npm install
+  - npm install --save-dev jest
   - curl -sL https://sentry.io/get-cli/ | bash
   - npm install @sentry/tracing --save
 
