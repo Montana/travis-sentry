@@ -24,6 +24,7 @@ after_success:
   - shasum -a 256 -c codecov.SHA256SUM
   - chmod +x codecov
   - ./codecov --token=${CODECOV_TOKEN}
+  - ./codecov upload-process -r Montana/travis-sentry
 
   - node app.js > app.log 2>&1 &
   - >
