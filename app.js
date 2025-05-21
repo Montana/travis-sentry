@@ -3,8 +3,8 @@ const Sentry = require('@sentry/node');
 const Tracing = require('@sentry/tracing');
 
 Sentry.init({
-  dsn: process.env.SENTRY_DSN,
-  tracesSampleRate: 1.0, 
+  dsn: process.env.SENTRY_DSN, 
+  tracesSampleRate: 1.0,
   integrations: [
     new Sentry.Integrations.Http({ tracing: true }),
     new Tracing.Integrations.Express({ app: express() }),
@@ -18,19 +18,28 @@ app.use(Sentry.Handlers.requestHandler());
 app.use(Sentry.Handlers.tracingHandler());
 
 app.get('/', (req, res) => {
-  res.send('Hello from Node + Sentry with Tracing!');
+  res.send('Hello from Node + Sentry!');
 });
 
 app.get('/error', (req, res) => {
-  Sentry.addBreadcrumb({
-    category: 'custom',
-    message: 'Throwing error on /error route',
-    level: 'error',
-  });
-  throw new Error('Simulated error for Sentry tracing');
+  throw new Error('Intentional error to test Sentry reporting (sync)');
+});
+
+app.get('/async-error', async (req, res, next) => {
+  try {
+    await new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('Intentional error to test Sentry reporting (async)')), 200)
+    );
+  } catch (err) {
+    next(err); 
+  }
 });
 
 app.use(Sentry.Handlers.errorHandler());
+
+app.use((err, req, res, next) => {
+  res.status(500).send('Something broke and Sentry was notified.');
+});
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
