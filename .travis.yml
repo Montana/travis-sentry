@@ -7,26 +7,39 @@ git:
   depth: false
 
 install:
+  - echo "Installing project dependencies..."
   - npm install
-  - npm install @sentry/tracing --save
+  - echo "Installing Sentry CLI..."
   - curl -sL https://sentry.io/get-cli/ | bash
+  - echo "Ensuring @sentry/tracing is installed..."
+  - npm install @sentry/tracing --save
 
 script:
+  - echo "Running tests..."
   - npm test
 
 after_success:
   - echo "Starting app in background..."
   - node app.js > app.log 2>&1 &
   - echo "Waiting for app to respond on /healthz..."
-  - for i in {1..10}; do
-      curl -s http://localhost:3000/healthz && break;
-      echo "Retry $i: App not ready yet...";
+  - >
+    for i in {1..10}; do
+      if curl -s http://localhost:3000/healthz; then
+        echo "App is healthy.";
+        break;
+      fi;
+      echo "Attempt $i: App not ready, retrying in 1s...";
       sleep 1;
     done
-  - echo "Hitting test error routes..."
+  - if ! curl -s http://localhost:3000/healthz; then
+      echo "App failed to start or respond to healthz.";
+      echo "--- APP LOG ---";
+      cat app.log;
+      exit 1;
+    fi
+  - echo "Triggering error route for Sentry..."
   - curl -s http://localhost:3000/error || true
   - curl -s http://localhost:3000/async-error || true
-  - echo "Error routes triggered. Check Sentry dashboard."
 
 deploy:
   provider: script
