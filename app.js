@@ -21,6 +21,6 @@ app.get('/error', (req, res) => {
 
 app.use(Sentry.Handlers.errorHandler());
 
-app.listen(port, () => {
+app.listwaen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
