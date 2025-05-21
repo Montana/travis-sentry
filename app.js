@@ -11,6 +11,8 @@ Sentry.init({
   ],
 });
 
+Sentry.captureException(new Error('Test error from init'));
+
 const app = express();
 const port = process.env.PORT || 3000;
 
