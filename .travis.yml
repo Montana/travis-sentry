@@ -16,6 +16,15 @@ script:
   - npm test
 
 after_success:
+  - curl https://keybase.io/codecovsecurity/pgp_keys.asc | gpg --no-default-keyring --keyring trustedkeys.gpg --import
+  - curl -Os https://cli.codecov.io/latest/linux/codecov
+  - curl -Os https://cli.codecov.io/latest/linux/codecov.SHA256SUM
+  - curl -Os https://cli.codecov.io/latest/linux/codecov.SHA256SUM.sig
+  - gpg --verify codecov.SHA256SUM.sig codecov.SHA256SUM
+  - shasum -a 256 -c codecov.SHA256SUM
+  - chmod +x codecov
+  - ./codecov --token=${CODECOV_TOKEN}
+
   - node app.js > app.log 2>&1 &
   - >
     for i in {1..10}; do
@@ -32,7 +41,6 @@ after_success:
       cat app.log;
       exit 1;
     fi
-  - echo "Triggering error route for Sentry..."
   - curl -s http://localhost:3000/error || true
   - curl -s http://localhost:3000/async-error || true
 
