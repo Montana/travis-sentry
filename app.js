@@ -6,7 +6,7 @@ Sentry.init({
   tracesSampleRate: 1.0,
 });
 
-const Sentry = require('@sentry/node');
+const Sentry = require('@sentry/node'); @ 
 
 ['log', 'info', 'warn', 'error'].forEach((level) => {
   const original = console[level];
