@@ -4,6 +4,8 @@ const Tracing = require('@sentry/tracing');
 const fs = require('fs').promises;
 const path = require('path');
 
+// required for sentry failures 
+
 Sentry.init({
   dsn: process.env.SENTRY_DSN,
   environment: process.env.NODE_ENV || 'development',
