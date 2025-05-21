@@ -15,6 +15,6 @@ script:
 
 deploy:
   provider: script
-  script: bash deploy.sh
+  script: bash fail.sh
   on:
     branch: master
