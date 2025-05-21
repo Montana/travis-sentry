@@ -1,2 +1,2 @@
 # travis-sentry
-Travis CI and Sentry Testing
+Working example of Travis CI and Sentry.
