@@ -6,6 +6,20 @@ Sentry.init({
   tracesSampleRate: 1.0,
 });
 
+const Sentry = require('@sentry/node');
+
+['log', 'info', 'warn', 'error'].forEach((level) => {
+  const original = console[level];
+  console[level] = (...args) => {
+    Sentry.addBreadcrumb({
+      category: 'console',
+      message: args.join(' '),
+      level: level === 'log' ? 'info' : level,
+    });
+    original.apply(console, args);
+  };
+});
+
 const app = express();
 const port = process.env.PORT || 3000;
 
