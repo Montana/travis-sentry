@@ -1,5 +1,5 @@
 language: node_js
-dist: jammy
+dist: noble
 node_js:
   - "16"
 
@@ -11,11 +11,7 @@ install:
   - npm install --save-dev jest
   - curl -sL https://sentry.io/get-cli/ | bash
   - npm install @sentry/tracing --save
-
- addons:
-  apt:
-    packages:
-      - jq
+  - sudo apt-get update && sudo apt-get install -y jq
 
 before_script:
   - chmod +x tapper.sh
