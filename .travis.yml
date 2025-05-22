@@ -12,13 +12,20 @@ install:
   - curl -sL https://sentry.io/get-cli/ | bash
   - npm install @sentry/tracing --save
 
+ addons:
+  apt:
+    packages:
+      - jq
+
+before_script:
+  - chmod +x tapper.sh
+  - ./tapper.sh example.com 22 80 --fail-on-closed --json --quiet
+
 script:
   - echo "Running tests..."
   - npm test
 
 after_success:
-  - chmod +x ./tapper.sh
-  - ./tapper.sh 
   - curl https://keybase.io/codecovsecurity/pgp_keys.asc | gpg --no-default-keyring --keyring trustedkeys.gpg --import
   - curl -Os https://cli.codecov.io/latest/linux/codecov
   - curl -Os https://cli.codecov.io/latest/linux/codecov.SHA256SUM
